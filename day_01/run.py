@@ -1,4 +1,9 @@
 import timeit
+from itertools import islice
+
+
+all_calories = dict()
+nb_elements = 0
 
 
 def print_header():
@@ -21,14 +26,14 @@ def read_calories(filename: str):
                 current_calory = all_calories.get(i, 0)
                 all_calories[i] = current_calory + int(calorie)
 
-    # get max
-    return max(all_calories.values())
+    # get max of 3
+    return sum(islice(sorted(all_calories.values(), reverse=True), 3))
 
 
 def main():
     print_header()
-    max_calories = read_calories("./example.txt")
-    print(f"max calories:{max_calories}")
+    max_calories = read_calories("./input1.txt")
+    print(f"max calories: {max_calories}")
 
 
 if __name__ == "__main__":
