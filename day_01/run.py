@@ -2,10 +2,6 @@ import timeit
 from itertools import islice
 
 
-all_calories = dict()
-nb_elements = 0
-
-
 def print_header():
     print("================")
     print("= AoC - Day 01 =")
