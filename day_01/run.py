@@ -27,6 +27,7 @@ def read_calories(filename: str):
                 all_calories[i] = current_calory + int(calorie)
 
     # get max of 3
+    # use islice instead of [:3] to avoid copy
     return sum(islice(sorted(all_calories.values(), reverse=True), 3))
 
 
