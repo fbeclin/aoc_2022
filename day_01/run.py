@@ -9,7 +9,6 @@ def print_header():
 
 
 def read_calories(filename: str):
-    # The function readlines() reads the file.
     i = 0
     all_calories = dict()
 
