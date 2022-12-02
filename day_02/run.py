@@ -25,15 +25,15 @@ def print_header():
 """
 Opponent: A = Rock, B = Paper, C = Scissors
 You: X = Rock, Y = Paper, Z = Scissors
-A / X = Draw
-A / Y = Win
-A / Z = Lose
-B / X = Lose
-B / Y = Draw
-B / Z = Win
-C / X = Win
-C / Y = Lose
-C / Z = Draw
+A / X = Draw = 0
+A / Y = Win = -1
+A / Z = Lose = -2
+B / X = Lose = 1
+B / Y = Draw = 0
+B / Z = Win = 1
+C / X = Win = 2
+C / Y = Lose = 1
+C / Z = Draw = 0
 """
 
 round_map = {
@@ -49,6 +49,27 @@ round_map = {
 }
 
 
+"""
+Opponent: A = Rock, B = Paper, C = Scissors
+You: X = Rock, Y = Paper, Z = Scissors
+X = Lose
+Y = Draw
+Z = Win
+"""
+
+round_map_action = {
+    "A X": "Z",
+    "A Y": "X",
+    "A Z": "Y",
+    "B X": "X",
+    "B Y": "Y",
+    "B Z": "Z",
+    "C X": "Y",
+    "C Y": "Z",
+    "C Z": "X",
+}
+
+
 def play_round(line: str) -> int:
     return round_map[line].value + ActionScore[line[2]].value
 
@@ -59,13 +80,21 @@ def round_1(filename: str):
         print(f"Total_score: {total_score}")
 
 
-def round_2():
-    pass
+def play_round_2(line: str) -> int:
+    shape = round_map_action[line]
+    return round_map[f"{line[0]} {shape}"].value + ActionScore[shape].value
+
+
+def round_2(filename: str):
+    with open(filename) as f:
+        total_score = sum([play_round_2(line.strip()) for line in f.readlines()])
+        print(f"Total_score: {total_score}")
 
 
 def main():
     print_header()
-    round_1(INPUT_FILEPATH)
+    # round_1(INPUT_FILEPATH)
+    round_2(INPUT_FILEPATH)
 
 
 if __name__ == "__main__":
