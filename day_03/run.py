@@ -19,15 +19,14 @@ def find_share_item_type(line: str):
     first_compartiment = set(line[:middle_index])
     second_compartiment = set(line[middle_index:])
     # intersection
-    intersect = first_compartiment.intersection(second_compartiment)
+    intersect = first_compartiment & second_compartiment
     return get_priority(intersect.pop()) if intersect else 0
 
 
 def find_share_item_type_2(group: list):
     # intersection
-    intersect = (group[0] & (group[1])) & group[2]
-    priority = get_priority(intersect.pop()) if intersect else 0
-    return priority
+    intersect = (group[0] & group[1]) & group[2]
+    return get_priority(intersect.pop()) if intersect else 0
 
 
 def round_1(filename: str):
