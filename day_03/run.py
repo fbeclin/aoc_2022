@@ -1,9 +1,7 @@
 import timeit
+from string import ascii_letters
 
 INPUT_FILEPATH = "./input1.txt"
-
-
-priority_map = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 
 def print_header():
@@ -13,8 +11,7 @@ def print_header():
 
 
 def get_priority(item_type: str):
-    priority = priority_map.index(item_type) + 1
-    return priority
+    return ascii_letters.index(item_type) + 1
 
 
 def find_share_item_type(line: str):
@@ -23,10 +20,14 @@ def find_share_item_type(line: str):
     second_compartiment = set(line[middle_index:])
     # intersection
     intersect = first_compartiment.intersection(second_compartiment)
-    if intersect:
-        return get_priority(intersect.pop())
+    return get_priority(intersect.pop()) if intersect else 0
 
-    return 0
+
+def find_share_item_type_2(group: list):
+    # intersection
+    intersect = (group[0] & (group[1])) & group[2]
+    priority = get_priority(intersect.pop()) if intersect else 0
+    return priority
 
 
 def round_1(filename: str):
@@ -37,13 +38,23 @@ def round_1(filename: str):
         print(f"sum_priorities: {sum_priorities}")
 
 
-def round_2():
-    pass
+def round_2(filename: str):
+    with open(filename) as f:
+        sum_priorities = sum(
+            [
+                find_share_item_type_2(group)
+                for group in zip(
+                    *[iter([set(line.strip()) for line in f.readlines()])] * 3
+                )
+            ]
+        )
+        print(f"sum_priorities: {sum_priorities}")
 
 
 def main():
     print_header()
-    round_1(INPUT_FILEPATH)
+    # round_1(INPUT_FILEPATH)
+    round_2(INPUT_FILEPATH)
 
 
 if __name__ == "__main__":
