@@ -1,9 +1,9 @@
 import timeit
 
-INPUT_FILEPATH = "./example.txt"
+INPUT_FILEPATH = "./input1.txt"
 
 
-priority_map = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQSRTUVWXYZ"
+priority_map = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 
 def print_header():
@@ -13,41 +13,23 @@ def print_header():
 
 
 def get_priority(item_type: str):
-    return priority_map.index(item_type) + 1
+    priority = priority_map.index(item_type) + 1
+    return priority
 
 
 def find_share_item_type(line: str):
-    first_visited_item_type: set = set()
-    second_visited_item_type: set = set()
     middle_index = int(len(line) / 2)
-    first = line[:middle_index]
-    second = line[middle_index + 1 :]
+    first_compartiment = set(line[:middle_index])
+    second_compartiment = set(line[middle_index:])
+    # intersection
+    intersect = first_compartiment.intersection(second_compartiment)
+    if intersect:
+        return get_priority(intersect.pop())
 
-    for _, first_item_type in enumerate(first):
-        first_visited_item_type.add(first_item_type)
-
-        # first iteration
-        if len(second_visited_item_type) != len(second):
-            for _, second_item_type in enumerate(second):
-                second_visited_item_type.add(first_item_type)
-                if first_item_type == second_item_type:
-                    return get_priority(first_item_type)
-
-        else:
-            # find by index
-            if first_item_type in second_visited_item_type:
-                return get_priority(first_item_type)
-
-    for _, second_item_type in enumerate(second_visited_item_type):
-        if second_item_type in first_visited_item_type:
-            return get_priority(second_item_type)
-
-    # not found
     return 0
 
 
 def round_1(filename: str):
-
     with open(filename) as f:
         sum_priorities = sum(
             [find_share_item_type(line.strip()) for line in f.readlines()]
