@@ -1,6 +1,6 @@
 import timeit
 
-INPUT_FILEPATH = "./example.txt"
+INPUT_FILEPATH = "./input1.txt"
 
 
 def print_header():
@@ -9,9 +9,10 @@ def print_header():
     print("================")
 
 
-def get_range_as_set(range_from_file: str) -> set:
+def get_range_as_set(range_from_file: str):
     range_values = range_from_file.split("-")
-    return range(int(range_values[0]), int(range_values[1]))
+    range_value = range(int(range_values[0]), int(range_values[1]) + 1)
+    return range_value
 
 
 def is_fully_contained(ranges: list):
