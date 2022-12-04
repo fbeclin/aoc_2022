@@ -11,8 +11,7 @@ def print_header():
 
 def get_range_as_set(range_from_file: str):
     range_values = range_from_file.split("-")
-    range_value = range(int(range_values[0]), int(range_values[1]) + 1)
-    return set(range_value)
+    return set(range(int(range_values[0]), int(range_values[1]) + 1))
 
 
 def is_fully_contained(ranges: list):
