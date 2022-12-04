@@ -27,8 +27,8 @@ def is_fully_contained(ranges: list):
 
 
 def overlap(ranges: list):
-    first_range_set = set(get_range_as_set(ranges[0]))
-    second_range_set = set(get_range_as_set(ranges[1]))
+    first_range_set = get_range_as_set(ranges[0])
+    second_range_set = get_range_as_set(ranges[1])
     first_range_set.intersection_update(second_range_set)
     return len(first_range_set) != 0
 
