@@ -12,12 +12,12 @@ def print_header():
 def get_range_as_set(range_from_file: str):
     range_values = range_from_file.split("-")
     range_value = range(int(range_values[0]), int(range_values[1]) + 1)
-    return range_value
+    return set(range_value)
 
 
 def is_fully_contained(ranges: list):
-    first_range_set = set(get_range_as_set(ranges[0]))
-    second_range_set = set(get_range_as_set(ranges[1]))
+    first_range_set = get_range_as_set(ranges[0])
+    second_range_set = get_range_as_set(ranges[1])
     first_set_len = len(first_range_set)
     second_set_len = len(second_range_set)
 
