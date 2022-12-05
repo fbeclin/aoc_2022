@@ -3,8 +3,8 @@ import re
 
 
 INPUT_FILEPATH = "./input1.txt"
-STACK_REGEX = "( {3}|\[([A-Z])\])"
-CRANE_REGEX = "move (\d) from (\d) to (\d)"
+STACK_REGEX = "( {4}|\[([A-Z])\])"
+CRANE_REGEX = "move (\d+) from (\d+) to (\d+)"
 
 
 switch_to_crane = False
@@ -23,7 +23,7 @@ def read_stacks(line: str):
         switch_to_crane = True
     else:
         matches = re.findall(STACK_REGEX, line)
-        if len(matches) == 3:
+        if len(matches) > 0:
             load_stacks(matches)
 
 
@@ -36,13 +36,10 @@ def load_stacks(matches: list):
         if stack[1]:
             stacks[i].insert(0, stack[1])
 
-    print(stacks)
-
 
 def read_movements(line: str):
     global stacks
     matches = re.findall(CRANE_REGEX, line)[0]
-    print(matches)
     apply_movement(int(matches[0]), int(matches[1]), int(matches[2]))
 
 
@@ -51,12 +48,15 @@ def apply_movement(nb_stack: int, from_stack: int, to_stack: int):
         stack = stacks[from_stack - 1].pop()
         stacks[to_stack - 1].append(stack)
 
-    print(stacks)
 
-
-def get_messages():
+def get_message():
     global stacks
-    print("".join(s[0] for _, s in enumerate(stacks)))
+    print("".join(s[len(s) - 1] for _, s in enumerate(stacks)))
+
+
+def print_stacks():
+    for i, s in enumerate(stacks):
+        print(f"{i+1}: {s}")
 
 
 def round_1(filename: str):
@@ -65,12 +65,7 @@ def round_1(filename: str):
             read_movements(line) if switch_to_crane else read_stacks(line)
             for line in f.readlines()
         ]
-        get_messages()
-    # with open(filename) as f:
-    #     sum_fully_countained = sum(
-    #         [is_fully_contained(line.strip().split(",")) for line in f.readlines()]
-    #     )
-    #     print(f"sum_fully_countained: {sum_fully_countained}")
+        get_message()
 
 
 def round_2(filename: str):
