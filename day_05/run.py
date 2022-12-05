@@ -2,7 +2,7 @@ import timeit
 import re
 
 
-INPUT_FILEPATH = "./example.txt"
+INPUT_FILEPATH = "./input1.txt"
 STACK_REGEX = "( {3}|\[([A-Z])\])"
 CRANE_REGEX = "move (\d) from (\d) to (\d)"
 
