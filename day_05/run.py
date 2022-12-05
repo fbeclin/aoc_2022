@@ -37,16 +37,22 @@ def load_stacks(matches: list):
             stacks[i].insert(0, stack[1])
 
 
-def read_movements(line: str):
+def read_movements(line: str, one_at_a_time: bool):
     global stacks
     matches = re.findall(CRANE_REGEX, line)[0]
-    apply_movement(int(matches[0]), int(matches[1]), int(matches[2]))
+    apply_movement(int(matches[0]), int(matches[1]), int(matches[2]), one_at_a_time)
 
 
-def apply_movement(nb_stack: int, from_stack: int, to_stack: int):
-    for _ in range(nb_stack):
-        stack = stacks[from_stack - 1].pop()
-        stacks[to_stack - 1].append(stack)
+def apply_movement(nb_stack: int, from_stack: int, to_stack: int, one_at_a_time: bool):
+    if one_at_a_time:
+        for _ in range(nb_stack):
+            stack = stacks[from_stack - 1].pop()
+            stacks[to_stack - 1].append(stack)
+    else:
+        from_stack = stacks[from_stack - 1]
+        # move all crates at once
+        stacks[to_stack - 1].extend(from_stack[len(from_stack) - nb_stack :])
+        del from_stack[len(from_stack) - nb_stack :]
 
 
 def get_message():
@@ -62,20 +68,25 @@ def print_stacks():
 def round_1(filename: str):
     with open(filename) as f:
         [
-            read_movements(line) if switch_to_crane else read_stacks(line)
+            read_movements(line, True) if switch_to_crane else read_stacks(line)
             for line in f.readlines()
         ]
         get_message()
 
 
 def round_2(filename: str):
-    pass
+    with open(filename) as f:
+        [
+            read_movements(line, False) if switch_to_crane else read_stacks(line)
+            for line in f.readlines()
+        ]
+        get_message()
 
 
 def main():
     print_header()
-    round_1(INPUT_FILEPATH)
-    # round_2(INPUT_FILEPATH)
+    # round_1(INPUT_FILEPATH)
+    round_2(INPUT_FILEPATH)
 
 
 if __name__ == "__main__":
