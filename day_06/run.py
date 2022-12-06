@@ -5,7 +5,6 @@ import timeit
 INPUT_FILEPATH = "./input1.txt"
 
 
-@dataclass
 class Slider(object):
     def __init__(self, marker_length: int):
         self.pos = 0
