@@ -57,14 +57,12 @@ def go_into_parent_folder():
     global sum_size_threshold
 
     if current_folder.parent_folder != None:
-        exiting_folder_size = current_folder.size
-        if exiting_folder_size.size < SIZE_THRESHOLD:
-            sum_size_threshold += exiting_folder_size
+        folder_sizes.append(current_folder.size)
+        if current_folder.size < SIZE_THRESHOLD:
+            sum_size_threshold += current_folder.size
 
-        current_folder.parent_folder.size += exiting_folder_size
+        current_folder.parent_folder.size += current_folder.size
         current_folder = current_folder.parent_folder
-
-        folder_sizes.append(exiting_folder_size)
 
 
 def go_back_to_root():
