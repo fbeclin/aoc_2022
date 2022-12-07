@@ -58,7 +58,7 @@ def go_into_parent_folder():
 
     if current_folder.parent_folder != None:
         exiting_folder_size = current_folder.size
-        if current_folder.size < SIZE_THRESHOLD:
+        if exiting_folder_size.size < SIZE_THRESHOLD:
             sum_size_threshold += exiting_folder_size
 
         current_folder.parent_folder.size += exiting_folder_size
