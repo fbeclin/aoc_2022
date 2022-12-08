@@ -1,7 +1,7 @@
 from __future__ import annotations
 import timeit
 
-INPUT_FILEPATH = "./example.txt"
+INPUT_FILEPATH = "./input1.txt"
 
 
 def print_header():
