@@ -13,24 +13,6 @@ class Movement(object):
         return f"direction: {self.direction} , step: {self.step}"
 
 
-class Rope(object):
-    def __init__(self) -> None:
-        self.head = Head()
-        self.tail = Tail()
-        print(f"H:{self.head}")
-
-    def move_head_to(self, movement: Movement):
-        print(f"{movement}")
-        for _ in range(movement.step):
-            self.head.move_to(movement.direction)
-
-        print(f"H:{self.head}")
-        return self
-
-    def _move_tail_to(self):
-        pass
-
-
 class Head(object):
     def __init__(self) -> None:
         self.x_pos = 0
@@ -57,7 +39,17 @@ class Tail(object):
         self.y_pos = 0
 
     def move_to(self, head: Head):
-        pass
+        if abs(self.x_pos - head.x_pos) >= 2:
+            self.x_pos += 1 if self.x_pos < head.x_pos else -1
+
+            if self.y_pos != head.y_pos:
+                self.y_pos += 1 if self.y_pos < head.y_pos else -1
+
+        if abs(self.y_pos - head.y_pos) >= 2:
+            self.y_pos += 1 if self.y_pos < head.y_pos else -1
+
+            if self.x_pos != head.x_pos:
+                self.x_pos += 1 if self.x_pos < head.x_pos else -1
 
 
 class Grid(object):
@@ -66,6 +58,7 @@ class Grid(object):
         self.max_y = 0
         self.min_x = 0
         self.min_y = 0
+        self.tail_visited_positions = {}
 
     def _update_coord(self, x_pos: int, y_pos: int):
         if x_pos < self.min_x:
@@ -78,25 +71,47 @@ class Grid(object):
         elif y_pos > self.max_y:
             self.max_y = y_pos
 
-    def draw(self, rope: Rope):
-        self._update_coord(rope.head.x_pos, rope.head.y_pos)
+
+    def draw(self, head: Head, tail: Tail):
+        self._update_coord(head.x_pos, head.y_pos)
+        self.tail_visited_positions[(tail.x_pos, tail.y_pos)] = 1
 
         for row in range(self.min_y, self.max_y + 1):
             drawing_row = ""
             for col in range(self.min_x, self.max_x + 1):
-                if col == rope.head.x_pos and row == rope.head.y_pos:
+                if col == head.x_pos and row == head.y_pos:
                     drawing_row += "H"
-                elif col == rope.tail.x_pos and row == rope.tail.y_pos:
+                elif col == tail.x_pos and row == tail.y_pos:
                     drawing_row += "T"
                 else:
                     drawing_row += "."
-            
+
             print(drawing_row)
 
         print("\r")
 
+    @property
+    def number_of_tail_visited_positions(self):
+        return len(self.tail_visited_positions)
 
-visited_positions = {}
+
+class Rope(object):
+    def __init__(self) -> None:
+        self.head = Head()
+        self.tail = Tail()
+        print(f"H:{self.head}")
+
+    def move_head_to(self, movement: Movement, grid: Grid):
+        print(f"{movement}")
+        for _ in range(movement.step):
+            self.head.move_to(movement.direction)
+            self._move_tail_to_head()
+            grid.draw(self.head, self.tail)
+
+        return self
+
+    def _move_tail_to_head(self):
+        self.tail.move_to(self.head)
 
 
 def print_header():
@@ -106,11 +121,12 @@ def print_header():
 
 
 def round_1(filename: str):
-    
+
     with open(filename) as f:
         grid = Grid()
         rope = Rope()
-        [grid.draw(rope.move_head_to(Movement(line.strip()))) for line in f.readlines()]
+        [rope.move_head_to(Movement(line.strip()), grid) for line in f.readlines()]
+        print(f"number_of_visited_positions: {grid.number_of_tail_visited_positions}")
 
 
 def round_2(filename: str):
