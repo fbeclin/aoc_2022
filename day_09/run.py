@@ -123,8 +123,7 @@ def print_header():
     print("================")
 
 
-def round_1(filename: str):
-
+def round_1_2(filename: str):
     with open(filename) as f:
         grid = Grid()
         rope = Rope()
@@ -134,8 +133,7 @@ def round_1(filename: str):
 
 def main():
     print_header()
-    round_1(INPUT_FILEPATH)
-    # round_2(INPUT_FILEPATH)
+    round_1_2(INPUT_FILEPATH)
 
 
 if __name__ == "__main__":
