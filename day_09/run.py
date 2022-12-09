@@ -1,7 +1,9 @@
+from __future__ import annotations
 import timeit
 
 INPUT_FILEPATH = "./input1.txt"
 DRAW_GRID = False
+NB_OF_KNOTS = 10
 
 
 class Movement(object):
@@ -14,43 +16,39 @@ class Movement(object):
         return f"direction: {self.direction} , step: {self.step}"
 
 
-class Head(object):
-    def __init__(self) -> None:
+class Knot(object):
+    def __init__(self, is_head: bool) -> None:
         self.x_pos = 0
         self.y_pos = 0
+        self.is_head = is_head
 
-    def move_to(self, direction: str):
-        match direction:
-            case "R":
-                self.x_pos += 1
-            case "L":
-                self.x_pos -= 1
-            case "U":
-                self.y_pos -= 1
-            case "D":
-                self.y_pos += 1
+    def move_to_direction(self, direction: str):
+        if self.is_head:
+            match direction:
+                case "R":
+                    self.x_pos += 1
+                case "L":
+                    self.x_pos -= 1
+                case "U":
+                    self.y_pos -= 1
+                case "D":
+                    self.y_pos += 1
+
+    def move_to_knot(self, knot: Knot):
+        if abs(self.x_pos - knot.x_pos) >= 2:
+            self.x_pos += 1 if self.x_pos < knot.x_pos else -1
+
+            if self.y_pos != knot.y_pos:
+                self.y_pos += 1 if self.y_pos < knot.y_pos else -1
+
+        if abs(self.y_pos - knot.y_pos) >= 2:
+            self.y_pos += 1 if self.y_pos < knot.y_pos else -1
+
+            if self.x_pos != knot.x_pos:
+                self.x_pos += 1 if self.x_pos < knot.x_pos else -1
 
     def __str__(self) -> str:
-        return f"x: {self.x_pos} , y: {self.y_pos}"
-
-
-class Tail(object):
-    def __init__(self) -> None:
-        self.x_pos = 0
-        self.y_pos = 0
-
-    def move_to(self, head: Head):
-        if abs(self.x_pos - head.x_pos) >= 2:
-            self.x_pos += 1 if self.x_pos < head.x_pos else -1
-
-            if self.y_pos != head.y_pos:
-                self.y_pos += 1 if self.y_pos < head.y_pos else -1
-
-        if abs(self.y_pos - head.y_pos) >= 2:
-            self.y_pos += 1 if self.y_pos < head.y_pos else -1
-
-            if self.x_pos != head.x_pos:
-                self.x_pos += 1 if self.x_pos < head.x_pos else -1
+        return f"x:{self.x_pos},y:{self.y_pos}"
 
 
 class Grid(object):
@@ -61,7 +59,7 @@ class Grid(object):
         self.min_y = 0
         self.tail_visited_positions = {}
 
-    def _update_coord(self, x_pos: int, y_pos: int):
+    def _update_grid_size(self, x_pos: int, y_pos: int):
         if x_pos < self.min_x:
             self.min_x = x_pos
         elif x_pos > self.max_x:
@@ -72,19 +70,26 @@ class Grid(object):
         elif y_pos > self.max_y:
             self.max_y = y_pos
 
-    def update(self, head: Head, tail: Tail):
-        self._update_coord(head.x_pos, head.y_pos)
-        self.tail_visited_positions[(tail.x_pos, tail.y_pos)] = 1
+    def update(self, knots: list[Knot]):
+        self._update_grid_size(knots[0].x_pos, knots[0].y_pos)
+        self.tail_visited_positions[
+            (knots[NB_OF_KNOTS - 1].x_pos, knots[NB_OF_KNOTS - 1].y_pos)
+        ] = 1
 
         if DRAW_GRID:
             for row in range(self.min_y, self.max_y + 1):
                 drawing_row = ""
                 for col in range(self.min_x, self.max_x + 1):
-                    if col == head.x_pos and row == head.y_pos:
-                        drawing_row += "H"
-                    elif col == tail.x_pos and row == tail.y_pos:
-                        drawing_row += "T"
-                    else:
+                    found = False
+                    for i, k in enumerate(knots):
+                        if col == k.x_pos and row == k.y_pos:
+                            if i == 0:
+                                drawing_row += "H"
+                            else:
+                                drawing_row += str(i)
+                            found = True
+                            break
+                    if not found:
                         drawing_row += "."
 
                 print(drawing_row)
@@ -98,22 +103,18 @@ class Grid(object):
 
 class Rope(object):
     def __init__(self) -> None:
-        self.head = Head()
-        self.tail = Tail()
-        print(f"H:{self.head}")
+        self.knots = [Knot(i == 0) for i in range(NB_OF_KNOTS)]
 
-    def move_head_to(self, movement: Movement, grid: Grid):
+    def move_to(self, movement: Movement, grid: Grid):
         if DRAW_GRID:
             print(f"{movement}")
         for _ in range(movement.step):
-            self.head.move_to(movement.direction)
-            self._move_tail_to_head()
-            grid.update(self.head, self.tail)
+            self.knots[0].move_to_direction(movement.direction)
+            for i in range(1, len(self.knots)):
+                self.knots[i].move_to_knot(self.knots[i - 1])
+                grid.update(self.knots)
 
         return self
-
-    def _move_tail_to_head(self):
-        self.tail.move_to(self.head)
 
 
 def print_header():
@@ -127,13 +128,8 @@ def round_1(filename: str):
     with open(filename) as f:
         grid = Grid()
         rope = Rope()
-        [rope.move_head_to(Movement(line.strip()), grid) for line in f.readlines()]
+        [rope.move_to(Movement(line.strip()), grid) for line in f.readlines()]
         print(f"number_of_visited_positions: {grid.number_of_tail_visited_positions}")
-
-
-def round_2(filename: str):
-    with open(filename) as f:
-        pass
 
 
 def main():
