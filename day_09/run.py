@@ -1,6 +1,7 @@
 import timeit
 
-INPUT_FILEPATH = "./example.txt"
+INPUT_FILEPATH = "./input1.txt"
+DRAW_GRID = False
 
 
 class Movement(object):
@@ -71,24 +72,24 @@ class Grid(object):
         elif y_pos > self.max_y:
             self.max_y = y_pos
 
-
-    def draw(self, head: Head, tail: Tail):
+    def update(self, head: Head, tail: Tail):
         self._update_coord(head.x_pos, head.y_pos)
         self.tail_visited_positions[(tail.x_pos, tail.y_pos)] = 1
 
-        for row in range(self.min_y, self.max_y + 1):
-            drawing_row = ""
-            for col in range(self.min_x, self.max_x + 1):
-                if col == head.x_pos and row == head.y_pos:
-                    drawing_row += "H"
-                elif col == tail.x_pos and row == tail.y_pos:
-                    drawing_row += "T"
-                else:
-                    drawing_row += "."
+        if DRAW_GRID:
+            for row in range(self.min_y, self.max_y + 1):
+                drawing_row = ""
+                for col in range(self.min_x, self.max_x + 1):
+                    if col == head.x_pos and row == head.y_pos:
+                        drawing_row += "H"
+                    elif col == tail.x_pos and row == tail.y_pos:
+                        drawing_row += "T"
+                    else:
+                        drawing_row += "."
 
-            print(drawing_row)
+                print(drawing_row)
 
-        print("\r")
+            print("\r")
 
     @property
     def number_of_tail_visited_positions(self):
@@ -102,11 +103,12 @@ class Rope(object):
         print(f"H:{self.head}")
 
     def move_head_to(self, movement: Movement, grid: Grid):
-        print(f"{movement}")
+        if DRAW_GRID:
+            print(f"{movement}")
         for _ in range(movement.step):
             self.head.move_to(movement.direction)
             self._move_tail_to_head()
-            grid.draw(self.head, self.tail)
+            grid.update(self.head, self.tail)
 
         return self
 
