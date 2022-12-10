@@ -1,26 +1,45 @@
 from __future__ import annotations
 import timeit
 
-INPUT_FILEPATH = "./example2.txt"
+INPUT_FILEPATH = "./input1.txt"
+
+CRT_WIDTH = 40
+CRT_HEIGHT = 6
+MAX_CYCLE = 220
+CYCLE_STEP = 40
 
 x_register = [1]
+crt_screen = [["."] * CRT_WIDTH for _ in range(CRT_HEIGHT)]
+
+
+def draw():
+    global x_register
+
+    print(".", end="", flush=True)
+
+    if (len(x_register) - 1) % CYCLE_STEP == 0:
+        print("\r")
 
 
 def noop():
-    global cycle
     x_register.append(x_register[len(x_register) - 1])
+    draw()
+
+
+def add_x(command: str):
+    value = int(command.split(" ")[1])
+    x_register.append(x_register[len(x_register) - 1] + value)
+    draw()
 
 
 def run(command: str):
-    global cycle
     global x_register
     match command:
         case "noop":
             noop()
         case _:
             noop()
-            value = int(command.split(" ")[1])
-            x_register.append(x_register[len(x_register) - 1] + value)
+            add_x(command=command)
 
 
 def print_header():
@@ -32,7 +51,9 @@ def print_header():
 def round_1(filename: str):
     with open(filename) as f:
         [run(line.strip()) for line in f.readlines()]
-        print(sum([x_register[c - 1] * c for c in range(20, 221, 40)]))
+        print(
+            sum([x_register[c - 1] * c for c in range(20, MAX_CYCLE + 1, CYCLE_STEP)])
+        )
 
 
 def main():
