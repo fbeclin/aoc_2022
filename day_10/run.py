@@ -1,7 +1,26 @@
 from __future__ import annotations
 import timeit
 
-INPUT_FILEPATH = "./input1.txt"
+INPUT_FILEPATH = "./example2.txt"
+
+x_register = [1]
+
+
+def noop():
+    global cycle
+    x_register.append(x_register[len(x_register) - 1])
+
+
+def run(command: str):
+    global cycle
+    global x_register
+    match command:
+        case "noop":
+            noop()
+        case _:
+            noop()
+            value = int(command.split(" ")[1])
+            x_register.append(x_register[len(x_register) - 1] + value)
 
 
 def print_header():
@@ -12,7 +31,8 @@ def print_header():
 
 def round_1(filename: str):
     with open(filename) as f:
-        pass
+        [run(line.strip()) for line in f.readlines()]
+        print(sum([x_register[c - 1] * c for c in range(20, 221, 40)]))
 
 
 def main():
