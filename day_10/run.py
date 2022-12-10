@@ -9,7 +9,6 @@ MAX_CYCLE = 220
 CYCLE_STEP = 40
 
 x_register = [1]
-crt_screen = [["."] * CRT_WIDTH for _ in range(CRT_HEIGHT)]
 
 
 def draw():
@@ -18,7 +17,7 @@ def draw():
     pos = (len(x_register) - 1) % CYCLE_STEP
     if pos == 0:
         print("\r")
-        
+
     print("#" if pos >= x - 1 and pos <= x + 1 else ".", end="", flush=True)
 
 
@@ -26,6 +25,7 @@ def noop():
     draw()
 
     x_register.append(x_register[len(x_register) - 1])
+
 
 def add_x(command: str):
     draw()
