@@ -14,24 +14,24 @@ crt_screen = [["."] * CRT_WIDTH for _ in range(CRT_HEIGHT)]
 
 def draw():
     global x_register
-    x = x_register[len(x_register) - 2]
-    pos = (len(x_register) - 2) % CYCLE_STEP
+    x = x_register[len(x_register) - 1]
+    pos = (len(x_register) - 1) % CYCLE_STEP
     if pos == 0:
         print("\r")
         
     print("#" if pos >= x - 1 and pos <= x + 1 else ".", end="", flush=True)
 
 
-
-
 def noop():
-    x_register.append(x_register[len(x_register) - 1])
     draw()
+
+    x_register.append(x_register[len(x_register) - 1])
 
 def add_x(command: str):
+    draw()
+
     value = int(command.split(" ")[1])
     x_register.append(x_register[len(x_register) - 1] + value)
-    draw()
 
 
 def run(command: str):
