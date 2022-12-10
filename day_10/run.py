@@ -1,4 +1,3 @@
-from __future__ import annotations
 import timeit
 
 INPUT_FILEPATH = "./input1.txt"
