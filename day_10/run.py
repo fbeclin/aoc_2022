@@ -9,7 +9,6 @@ x_register = [1]
 
 
 def draw():
-    global x_register
     x = x_register[len(x_register) - 1]
     pos = (len(x_register) - 1) % CYCLE_STEP
     if pos == 0:
@@ -32,7 +31,6 @@ def add_x(command: str):
 
 
 def run(command: str):
-    global x_register
     match command:
         case "noop":
             noop()
