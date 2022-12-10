@@ -3,8 +3,6 @@ import timeit
 
 INPUT_FILEPATH = "./input1.txt"
 
-CRT_WIDTH = 40
-CRT_HEIGHT = 6
 MAX_CYCLE = 220
 CYCLE_STEP = 40
 
@@ -50,7 +48,7 @@ def print_header():
     print("================")
 
 
-def round_1(filename: str):
+def round_1_2(filename: str):
     with open(filename) as f:
         [run(line.strip()) for line in f.readlines()]
         print("\r")
@@ -61,7 +59,7 @@ def round_1(filename: str):
 
 def main():
     print_header()
-    round_1(INPUT_FILEPATH)
+    round_1_2(INPUT_FILEPATH)
 
 
 if __name__ == "__main__":
