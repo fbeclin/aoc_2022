@@ -15,12 +15,15 @@ class Monkey(object):
     ) -> None:
         self.items = items
         self.operation_fct = operation_fct
+        self.number_of_inspection = 0
 
     def inspect_and_throw(self, monkeys: list[Monkey]):
         while self.items:
             result = self.operation_fct(self.items[0])
             monkeys[result[0]].items.append(result[1])
             del self.items[0]
+            self.number_of_inspection += 1
+
 
 def get_operation(
     operation: str, divisible_by: int, to_monkey_if_true: int, to_monkey_if_false: int
@@ -88,17 +91,16 @@ def round_1(filename: str):
             if not line:
                 break
             line = line.strip()
-            if line is not "":
+            if line != "":
                 monkeys.append(get_monkey(line, f))
 
         for r in range(20):
-            print(f"Round: {r} ---------------------------------")
             for i, m in enumerate(monkeys):
                 m.inspect_and_throw(monkeys=monkeys)
 
-            for i, m in enumerate(monkeys):
-                print(f"Monkey {i}: {m.items}")
-            
+        monkeys = sorted(monkeys, key=lambda x: x.number_of_inspection, reverse=True)
+        print(monkeys[0].number_of_inspection * monkeys[1].number_of_inspection)
+
 
 def main():
     print_header()
