@@ -1,12 +1,20 @@
 from __future__ import annotations
 import timeit
 
-INPUT_FILEPATH = "./example.txt"
+# INPUT_FILEPATH = "./example.txt"
+INPUT_FILEPATH = "./input1.txt"
 MAX_HEIGHT = 1000
 
 heightmap = []
-start: Height
-end: Height
+
+start: tuple[int, int]
+end: tuple[int, int]
+
+
+def print_header():
+    print("================")
+    print("= AoC - Day 12 =")
+    print("================")
 
 
 def get_letter_int(pos: tuple[int, int]):
@@ -16,70 +24,53 @@ def get_letter_int(pos: tuple[int, int]):
     return MAX_HEIGHT
 
 
-class Height(object):
-    def __init__(self, pos: tuple[int, int]) -> None:
-        self.pos = pos
-        self.neighbors: list[Height] = []
-        self.visited = {}
-
-    def _add_neighbor(self, n_pos: tuple[int, int], pos: tuple[int, int]):
-        print(n_pos, pos)
-        print(get_letter_int(n_pos), get_letter_int(pos))
-        if (
-            get_letter_int(n_pos) - get_letter_int(pos) <= 1
-        ) and n_pos not in self.visited:
-            self.neighbors.append(Height(n_pos))
-            self.visited[n_pos] = 1
-
-    def climb(self):
-        x_pos, y_pos = self.pos
-        # left
-        self._add_neighbor((x_pos - 1, y_pos), self.pos)
-        # right
-        self._add_neighbor((x_pos + 1, y_pos), self.pos)
-        # top
-        self._add_neighbor((x_pos, y_pos - 1), self.pos)
-        # bottom
-        self._add_neighbor((x_pos, y_pos + 1), self.pos)
-
-    def __str__(self) -> str:
-        return str(self.pos)
-
-    def __repr__(self) -> str:
-        return self.__str__()
-
-def print_header():
-    print("================")
-    print("= AoC - Day 12 =")
-    print("================")
-
-
 def load_heightmap(line: str):
     global start, end
     row = []
     for i, c in enumerate(line):
         if c == "S":
-            start = Height((len(heightmap), i))
-
+            start = (len(heightmap), i)
             c = "a"
         elif c == "E":
-            end = Height((len(heightmap), i))
-
+            end = (len(heightmap), i)
             c = "z"
         row.append(c)
     heightmap.append(row)
 
 
+def add_neighbors(current: tuple[int, int, int], queue: list, visited: set):
+    x, y, depth = current
+    for delta in ((1, 0), (0, 1), (-1, 0), (0, -1)):
+        dx, dy = delta
+        n_pos = (x + dx, y + dy)
+        if (
+            get_letter_int(n_pos) - get_letter_int((x, y)) <= 1
+        ) and n_pos not in visited:
+            queue.append((n_pos[0], n_pos[1], depth + 1))
+            visited.add(n_pos)
+
+
 def find_path():
-    start.climb()
+    queue = []
+    visited = set([start])
+    x, y = start
+    queue.append((x, y, 0))
+    while len(queue) > 0:
+        current = queue.pop()
+        x, y, depth = current
+        if (x, y) == end:
+            return depth
+        else:
+            add_neighbors(current=current, queue=queue, visited=visited)
+
+    return 0
 
 
 def round_1(filename: str):
     with open(filename) as f:
         [load_heightmap(line.strip()) for line in f.readlines()]
         print("start:" + str(start) + " / end:" + str(end))
-        find_path()
-        print(start.neighbors)
+        print(find_path())
 
 
 def round_2(filename: str):
