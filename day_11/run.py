@@ -3,7 +3,9 @@ from io import TextIOWrapper
 import timeit
 import re
 
-INPUT_FILEPATH = "./example.txt"
+INPUT_FILEPATH = "./input1.txt"
+MAX_WORRY_LEVEL: int = 13 * 7 * 3 * 19 * 5 * 2 * 11 * 17
+
 
 class Monkey(object):
     def __init__(
@@ -24,7 +26,11 @@ class Monkey(object):
 
 
 def get_operation(
-    operation: str, divisible_by: int, to_monkey_if_true: int, to_monkey_if_false: int, divide_by_3: bool = False
+    operation: str,
+    divisible_by: int,
+    to_monkey_if_true: int,
+    to_monkey_if_false: int,
+    divide_by_3: bool = False,
 ):
     match = re.match("(\d+|old) (\+|\*|\-|\/) (\d+|old)", operation)
     if not match:
@@ -45,8 +51,7 @@ def get_operation(
             case "/":
                 new_worry = var_1 / var_2
 
-        if divide_by_3:
-            new_worry = int(new_worry / 3)
+        new_worry = (int(new_worry / 3) if divide_by_3 else new_worry) % MAX_WORRY_LEVEL
 
         return (
             (to_monkey_if_true, new_worry)
@@ -69,7 +74,7 @@ def get_monkey(line: str, f: TextIOWrapper, divide_by_3: bool = False):
             int(read(f, "  Test: divisible by ")),
             int(read(f, "    If true: throw to monkey ")),
             int(read(f, "    If false: throw to monkey ")),
-            divide_by_3
+            divide_by_3,
         )
 
         return Monkey(items=starting_items, operation_fct=operation)
@@ -113,18 +118,19 @@ def round_2(filename: str):
             if line != "":
                 monkeys.append(get_monkey(line, f))
 
-        for i in range(10000):
-            print(f"round: {i}")
+        for _ in range(10000):
             for _, m in enumerate(monkeys):
                 m.inspect_and_throw(monkeys=monkeys)
 
         monkeys = sorted(monkeys, key=lambda x: x.number_of_inspection, reverse=True)
         print(monkeys[0].number_of_inspection * monkeys[1].number_of_inspection)
 
+
 def main():
     print_header()
     # round_1(INPUT_FILEPATH)
     round_2(INPUT_FILEPATH)
+
 
 if __name__ == "__main__":
     start_time = timeit.default_timer()
