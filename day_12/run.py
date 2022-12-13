@@ -51,14 +51,14 @@ def add_neighbors(current: tuple[int, int, int], queue: list, visited: set):
             visited.add(n_pos)
 
 
-def find_path():
-    visited = set([start])
-    x, y = start
+def bfs(start_pos, end_pos):
+    visited = set([start_pos])
+    x, y = start_pos
     queue = deque([(x, y, 0)])
     while len(queue) > 0:
         current = queue.popleft()
         x, y, depth = current
-        if (x, y) == end:
+        if (x, y) == end_pos:
             return depth
         else:
             add_neighbors(current=current, queue=queue, visited=visited)
@@ -69,19 +69,27 @@ def find_path():
 def round_1(filename: str):
     with open(filename) as f:
         [load_heightmap(line.strip()) for line in f.readlines()]
-        print("start:" + str(start) + " / end:" + str(end))
-        print(find_path())
+        print(bfs(start_pos=start, end_pos=end))
 
 
 def round_2(filename: str):
     with open(filename) as f:
-        pass
+        [load_heightmap(line.strip()) for line in f.readlines()]
+        paths = []
+        for row in range(len(heightmap)):
+            for col in range(len(heightmap[0])):
+                if heightmap[row][col] == "a":
+                    steps = bfs(start_pos=(row, col), end_pos=end)
+                    if steps > 0:
+                        paths.append(steps)
+
+        print(min(paths))
 
 
 def main():
     print_header()
-    round_1(INPUT_FILEPATH)
-    # round_2(INPUT_FILEPATH)
+    # round_1(INPUT_FILEPATH)
+    round_2(INPUT_FILEPATH)
 
 
 if __name__ == "__main__":
