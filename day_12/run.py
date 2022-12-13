@@ -1,4 +1,5 @@
 from __future__ import annotations
+from collections import deque
 import timeit
 
 # INPUT_FILEPATH = "./example.txt"
@@ -51,12 +52,11 @@ def add_neighbors(current: tuple[int, int, int], queue: list, visited: set):
 
 
 def find_path():
-    queue = []
     visited = set([start])
     x, y = start
-    queue.append((x, y, 0))
+    queue = deque([(x, y, 0)])
     while len(queue) > 0:
-        current = queue.pop()
+        current = queue.popleft()
         x, y, depth = current
         if (x, y) == end:
             return depth
