@@ -37,21 +37,6 @@ def print_header():
 
 def round_1(filename: str):
     with open(filename) as f:
-        i = 1
-        for pair in [
-            json.loads(
-                '{ "left":' + lines[0].strip() + ', "right":' + lines[1].strip() + " }"
-            )
-            for lines in grouper(f, 3, fillvalue="")
-        ]:
-            print(f"== Pair {i} ==")
-            compare(pair["left"], pair["right"])
-            print("")
-            i += 1
-
-
-def round_1_without_print(filename: str):
-    with open(filename) as f:
         print(
             sum(
                 i+1
@@ -79,8 +64,7 @@ def round_2(filename: str):
 
 def main():
     print_header()
-    # round_1(INPUT_FILEPATH)
-    round_1_without_print(INPUT_FILEPATH)
+    round_1(INPUT_FILEPATH)
     # round_2(INPUT_FILEPATH)
 
 
