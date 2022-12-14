@@ -83,17 +83,20 @@ def round_1_without_print(filename: str):
     with open(filename) as f:
         print(
             sum(
-                compare(pair["left"], pair["right"])
-                for pair in [
-                    json.loads(
-                        '{ "left":'
-                        + lines[0].strip()
-                        + ', "right":'
-                        + lines[1].strip()
-                        + " }"
-                    )
-                    for lines in grouper(f, 3, fillvalue="")
-                ]
+                i+1
+                for i, pair in enumerate(
+                    [
+                        json.loads(
+                            '{ "left":'
+                            + lines[0].strip()
+                            + ', "right":'
+                            + lines[1].strip()
+                            + " }"
+                        )
+                        for lines in grouper(f, 3, fillvalue="")
+                    ]
+                )
+                if compare(pair["left"], pair["right"])
             )
         )
 
@@ -105,7 +108,8 @@ def round_2(filename: str):
 
 def main():
     print_header()
-    round_1(INPUT_FILEPATH)
+    # round_1(INPUT_FILEPATH)
+    round_1_without_print(INPUT_FILEPATH)
     # round_2(INPUT_FILEPATH)
 
 
