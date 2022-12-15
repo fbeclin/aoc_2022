@@ -3,30 +3,33 @@ from more_itertools import grouper
 import timeit
 import json
 
-INPUT_FILEPATH = "./example.txt"
-# INPUT_FILEPATH = "./input1.txt"
+# INPUT_FILEPATH = "./example.txt"
+INPUT_FILEPATH = "./input1.txt"
 
+def compare_v2(left: any, right: any) -> int:
+    if isinstance(left, int) and isinstance(right, int):
+        if left < right:
+            return -1
+        elif left > right:
+            return 1
+        return 0
 
-def compare(left: list, right: list, depth: int = 0):
-    i = 0
-    while i < len(left) and i < len(right):
-        if isinstance(left[i], int) and isinstance(right[i], int):
-            if left[i] > right[i]:
-                return False
-            elif left[i] < right[i]:
-                return True
-        elif isinstance(left[i], list) and isinstance(right[i], list):
-            return compare(left[i], right[i], depth + 1)
+    if isinstance(left, int):
+        return compare_v2([left], right)
+    elif isinstance(right, int):
+        return compare_v2(left, [right])
+
+    if isinstance(left, list) and isinstance(right, list):
+        for i in range(min(len(left), len(right))):
+            c = compare_v2(left[i], right[i])
+            if c != 0:
+                return c
+        if len(left) < len(right):
+            return -1
+        elif len(left) > len(right):
+            return 1
         else:
-            if isinstance(left[i], int):
-                return compare([left[i]], right[i], depth + 1)
-            else:
-                return compare(left[i], [right[i]], depth + 1)
-        i += 1
-
-    if i != len(left) and i >= len(right):
-        return False
-    return True
+            return 0
 
 
 def print_header():
@@ -37,24 +40,24 @@ def print_header():
 
 def round_1(filename: str):
     with open(filename) as f:
-        print(
-            sum(
-                i+1
-                for i, pair in enumerate(
-                    [
-                        json.loads(
-                            '{ "left":'
-                            + lines[0].strip()
-                            + ', "right":'
-                            + lines[1].strip()
-                            + " }"
-                        )
-                        for lines in grouper(f, 3, fillvalue="")
-                    ]
-                )
-                if compare(pair["left"], pair["right"])
+        indices = [
+            i + 1
+            for i, pair in enumerate(
+                [
+                    json.loads(
+                        '{ "left":'
+                        + lines[0].strip()
+                        + ', "right":'
+                        + lines[1].strip()
+                        + " }"
+                    )
+                    for lines in grouper(f, 3, fillvalue="")
+                ]
             )
-        )
+            if compare_v2(pair["left"], pair["right"]) == -1
+        ]
+        print(indices)
+        print(sum(indices))
 
 
 def round_2(filename: str):
@@ -64,6 +67,7 @@ def round_2(filename: str):
 
 def main():
     print_header()
+    # round_1(INPUT_FILEPATH)
     round_1(INPUT_FILEPATH)
     # round_2(INPUT_FILEPATH)
 
