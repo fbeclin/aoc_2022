@@ -1,10 +1,14 @@
 from __future__ import annotations
+import functools
+from itertools import chain
 from more_itertools import grouper
 import timeit
 import json
 
 # INPUT_FILEPATH = "./example.txt"
 INPUT_FILEPATH = "./input1.txt"
+dividers = [[[2]], [[6]]]
+
 
 def compare_v2(left: any, right: any) -> int:
     if isinstance(left, int) and isinstance(right, int):
@@ -60,16 +64,44 @@ def round_1(filename: str):
         print(sum(indices))
 
 
+def get_packet_value(item: dict):
+    return item["packet"]
+
+
 def round_2(filename: str):
     with open(filename) as f:
-        pass
+        packets = sorted(
+            map(
+                get_packet_value,
+                chain(
+                    [
+                        json.loads('{ "packet":' + line.strip() + " }")
+                        for line in f.readlines()
+                        if len(line.strip()) > 0
+                    ],
+                    [json.loads('{ "packet":' + str(dividers[0]) + " }")],
+                    [json.loads('{ "packet":' + str(dividers[1]) + " }")],
+                ),
+            ),
+            key=functools.cmp_to_key(compare_v2),
+        )
+        print((packets.index(dividers[0]) + 1) * (packets.index(dividers[1]) + 1))
+
+    # for packet in zip(
+    #     [
+    #         json.loads('{ "packet":' + line.strip() + " }")
+    #         for line in f.readlines()
+    #         if len(line) > 0
+    #     ]
+    # ):
+    #     print(packet)
 
 
 def main():
     print_header()
     # round_1(INPUT_FILEPATH)
-    round_1(INPUT_FILEPATH)
-    # round_2(INPUT_FILEPATH)
+    # round_1(INPUT_FILEPATH)
+    round_2(INPUT_FILEPATH)
 
 
 if __name__ == "__main__":
