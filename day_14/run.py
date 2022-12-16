@@ -50,6 +50,39 @@ def to_rock_coords(points: list(tuple(int, int))):
         fill_rock_coords(points[i], points[i + 1])
 
 
+def pour_sand(min_x, max_x, max_depth):
+    for _ in range(5):
+        fall = [SAND_START]
+        while len(fall) <= max_depth + 1:
+            sand = fall[-1]
+            print(sand)
+            if sand in rocks or sand in sands:
+                fall.pop()
+                break
+            fall.append((sand[0], len(fall)))
+
+        if len(fall) <= max_depth + 1:
+            sands.add(fall[-1])
+        print(sands)
+    draw(min_x=min_x, max_x=max_x, max_depth=max_depth)
+
+
+def draw(min_x, max_x, max_depth):
+    for y in range(max_depth + 1):
+        for x in range(min_x, max_x + 1):
+            symb = (
+                "#"
+                if (x, y) in rocks
+                else "+"
+                if (x, y) == SAND_START
+                else "o"
+                if (x, y) in sands
+                else "."
+            )
+            print(symb, end="")
+        print("\r")
+
+
 def round_1(filename: str):
     min_x = 1000
     max_x = 0
@@ -62,15 +95,11 @@ def round_1(filename: str):
                 for line in f.readlines()
             ]
         ]
-        min_x = min(min(rocks,key=itemgetter(0))[0], min_x)
-        max_x = max(max(rocks,key=itemgetter(0))[0], max_x)
-        max_depth = max(max(rocks,key=itemgetter(1))[1], max_depth)
+        min_x = min(min(rocks, key=itemgetter(0))[0], min_x)
+        max_x = max(max(rocks, key=itemgetter(0))[0], max_x)
+        max_depth = max(max(rocks, key=itemgetter(1))[1], max_depth)
 
-        for y in range(max_depth + 1):
-            for x in range(min_x, max_x + 1):
-                symb = "#" if (x, y) in rocks else "."
-                print(symb, end="")
-            print("\r")
+        pour_sand(min_x=min_x, max_x=max_x, max_depth=max_depth)
 
 
 def round_2(filename: str):
