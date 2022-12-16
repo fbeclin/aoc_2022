@@ -87,19 +87,9 @@ def round_2(filename: str):
         )
         print((packets.index(dividers[0]) + 1) * (packets.index(dividers[1]) + 1))
 
-    # for packet in zip(
-    #     [
-    #         json.loads('{ "packet":' + line.strip() + " }")
-    #         for line in f.readlines()
-    #         if len(line) > 0
-    #     ]
-    # ):
-    #     print(packet)
-
 
 def main():
     print_header()
-    # round_1(INPUT_FILEPATH)
     # round_1(INPUT_FILEPATH)
     round_2(INPUT_FILEPATH)
 
