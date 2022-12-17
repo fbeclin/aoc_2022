@@ -6,8 +6,8 @@ from more_itertools import grouper
 import timeit
 import json
 
-INPUT_FILEPATH = "./example.txt"
-# INPUT_FILEPATH = "./input1.txt"
+# INPUT_FILEPATH = "./example.txt"
+INPUT_FILEPATH = "./input1.txt"
 
 MAX_HEIGHT = 200
 MAX_SIZE = 600
@@ -53,14 +53,13 @@ def to_rock_coords(points: list(tuple(int, int))):
 def pour_sand(min_x, max_x, max_depth):
     i = 0
     while True:
-        print("Sand pouring: " + str(i))
+        # print("Sand pouring: " + str(i))
         fall = [SAND_START]
         fall_attempts = []
 
         while len(fall) <= max_depth:
             x, y = fall[-1]
             sand = (x, y + 1)
-            # print(sand)
 
             if sand not in rocks and sand not in sands:
                 fall.append(sand)
@@ -85,7 +84,7 @@ def pour_sand(min_x, max_x, max_depth):
             break
 
         sands.add(fall[-1])
-        draw(min_x=min_x, max_x=max_x, max_depth=max_depth)
+        # draw(min_x=min_x, max_x=max_x, max_depth=max_depth)
         i += 1
 
     print(i)
