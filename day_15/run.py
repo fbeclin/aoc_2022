@@ -11,8 +11,7 @@ PATTERN = "Sensor at x=(.+), y=(.+): closest beacon is at x=(.+), y=(.+)"
 INPUT_FILEPATH = "./example.txt"
 # INPUT_FILEPATH = "./input1.txt"
 
-sensors_with_closest_beacon = {}
-beacon_with_sensors = {}
+sensors = {}
 sensors_coverage = set([])
 
 
@@ -23,8 +22,7 @@ def load_sensor(line: str):
     beacon = (int(search.group(3)), int(search.group(4)))
 
     # store relationship and their position
-    sensors_with_closest_beacon[sensor] = beacon
-    beacon_with_sensors[beacon] = sensor
+    sensors[sensor] = beacon
 
 
 def print_header():
@@ -34,7 +32,7 @@ def print_header():
 
 
 def get_coverage(sensor: tuple(int, int), x: tuple(int, int), y: tuple(int, int)):
-    beacon = sensors_with_closest_beacon[sensor]
+    beacon = sensors[sensor]
     distance = abs(beacon[0] - sensor[0]) + abs(beacon[1] - sensor[1])
 
     for dist in range(distance + 1):
@@ -43,17 +41,14 @@ def get_coverage(sensor: tuple(int, int), x: tuple(int, int), y: tuple(int, int)
             if c not in sensors_coverage:
                 sensors_coverage.add(c)
 
-        for col in range(distance + 1 - dist):
             c = (sensor[0] + col, sensor[1] - dist)
             if c not in sensors_coverage:
                 sensors_coverage.add(c)
 
-        for col in range(distance + 1 - dist):
             c = (sensor[0] + col, sensor[1] + dist)
             if c not in sensors_coverage:
                 sensors_coverage.add(c)
 
-        for col in range(distance + 1 - dist):
             c = (sensor[0] - col, sensor[1] + dist)
             if c not in sensors_coverage:
                 sensors_coverage.add(c)
@@ -66,9 +61,9 @@ def draw(x, y):
         for col in range(x[0], x[1] + 1):
             symb = (
                 "B"
-                if beacon_with_sensors.get((col, row))
+                if (col, row) in sensors.values()
                 else "S"
-                if sensors_with_closest_beacon.get((col, row))
+                if sensors.get((col, row))
                 else "#"
                 if (col, row) in sensors_coverage
                 else "."
@@ -78,52 +73,36 @@ def draw(x, y):
 
 
 def get_number(row: int, x: tuple(int, int)):
-    return len(
-        [
-            x
-            for x in range(x[0], x[1] + 1)
-            if beacon_with_sensors.get((x, row))
-            or sensors_with_closest_beacon.get((x, row))
-            or (x, row) in sensors_coverage
-        ]
-    ) - 1
+    return (
+        len(
+            [
+                x
+                for x in range(x[0], x[1] + 1)
+                if (x, row) in sensors.values()
+                or sensors.get((x, row))
+                or (x, row) in sensors_coverage
+            ]
+        )
+        - 1
+    )
 
 
 def round_1(filename: str):
     with open(filename) as f:
         [load_sensor(line.strip()) for line in f.readlines()]
 
-        min_x = min(
-            e[0]
-            for e in chain(
-                beacon_with_sensors.keys(), sensors_with_closest_beacon.keys()
-            )
-        )
-        max_x = max(
-            e[0]
-            for e in chain(
-                beacon_with_sensors.keys(), sensors_with_closest_beacon.keys()
-            )
-        )
+        min_x = min(e[0] for e in chain(sensors.values(), sensors.keys()))
+        max_x = max(e[0] for e in chain(sensors.values(), sensors.keys()))
 
-        min_y = min(
-            e[1]
-            for e in chain(
-                beacon_with_sensors.keys(), sensors_with_closest_beacon.keys()
-            )
-        )
-        max_y = max(
-            e[1]
-            for e in chain(
-                beacon_with_sensors.keys(), sensors_with_closest_beacon.keys()
-            )
-        )
+        min_y = min(e[1] for e in chain(sensors.values(), sensors.keys()))
+        max_y = max(e[1] for e in chain(sensors.values(), sensors.keys()))
         x = (min_x, max_x)
         y = (min_y, max_y)
+        print(x, y)
 
-        [get_coverage(s, x, y) for s in sensors_with_closest_beacon.keys()]
-        print(get_number(10, x))
-        # draw(x, y)
+        [get_coverage(s, x, y) for s in sensors.keys()]
+        # print(get_number(10, x))
+        draw(x, y)
 
 
 def round_2(filename: str):
