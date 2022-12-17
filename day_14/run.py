@@ -56,10 +56,10 @@ def pour_sand(min_x, max_x, max_depth):
         fall = [SAND_START]
         fall_attempts = []
 
-        while len(fall) < max_depth:
+        while True:
             x, y = fall[-1]
             sand = (x, y + 1)
-            print(sand)
+            # print(sand)
 
             if sand not in rocks and sand not in sands:
                 fall.append(sand)
@@ -68,20 +68,20 @@ def pour_sand(min_x, max_x, max_depth):
                 fall_attempts.append(sand)
                 fall.pop()
                 x, y = fall[-1]
-                print("try diagonaly", fall_attempts)
+                # print("try diagonaly", fall_attempts)
                 if len(fall_attempts) == 1:
-                    print("left")
+                    # print("left")
                     fall.append((x - 1, y + 1))
                 elif len(fall_attempts) == 2:
-                    print("right")
+                    # print("right")
                     fall.append((x + 1, y + 1))
                 else:
-                    print("in rest")
+                    # print("in rest")
                     fall.append((x, y + 1))
                     break
         sands.add(fall[-1])
-        print(sands)
-    draw(min_x=min_x, max_x=max_x, max_depth=max_depth)
+        # print(sands)
+        draw(min_x=min_x, max_x=max_x, max_depth=max_depth)
 
 
 def draw(min_x, max_x, max_depth):
