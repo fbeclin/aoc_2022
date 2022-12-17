@@ -50,41 +50,42 @@ def to_rock_coords(points: list(tuple(int, int))):
         fill_rock_coords(points[i], points[i + 1])
 
 
+def fall_sand(fall: list, delta_x: int = 0):
+    return (fall[-1][0] + delta_x, fall[-1][1] + 1)
+
+
 def pour_sand(min_x, max_x, max_depth):
-    i = 0
+    i = 1
     while True:
-        # print("Sand pouring: " + str(i))
+        print("Sand pouring: " + str(i))
         fall = [SAND_START]
-        fall_attempts = []
+        fall.append(fall_sand(fall))
 
-        while len(fall) <= max_depth:
-            x, y = fall[-1]
-            sand = (x, y + 1)
+        nb_attempts = 0
 
-            if sand not in rocks and sand not in sands:
+        while len(fall) <= max_depth + 1:
+            sand = fall.pop()
+            if sand not in sands and sand not in rocks:
                 fall.append(sand)
-                fall_attempts.clear()
+                fall.append(fall_sand(fall))
+                nb_attempts = 0
             else:
-                fall_attempts.append(sand)
-                fall.pop()
-                x, y = fall[-1]
-                # print("try diagonaly", fall_attempts)
-                if len(fall_attempts) == 1:
-                    # print("left")
-                    fall.append((x - 1, y + 1))
-                elif len(fall_attempts) == 2:
-                    # print("right")
-                    fall.append((x + 1, y + 1))
+                # try left
+                if nb_attempts == 0:
+                    fall.append(fall_sand(fall, -1))
+                    nb_attempts += 1
+                # try right
+                elif nb_attempts == 1:
+                    fall.append(fall_sand(fall, 1))
+                    nb_attempts += 1
                 else:
-                    # print("in rest")
-                    fall.append((x, y + 1))
+                    # rest
                     break
-
-        if len(fall) > max_depth:
-            break
 
         sands.add(fall[-1])
         # draw(min_x=min_x, max_x=max_x, max_depth=max_depth)
+        if len(fall) == 1 or len(fall) > max_depth:
+            break
         i += 1
 
     print(i)
@@ -96,10 +97,10 @@ def draw(min_x, max_x, max_depth):
             symb = (
                 "#"
                 if (x, y) in rocks
-                else "+"
-                if (x, y) == SAND_START
                 else "o"
                 if (x, y) in sands
+                else "+"
+                if (x, y) == SAND_START
                 else "."
             )
             print(symb, end="")
@@ -126,14 +127,32 @@ def round_1(filename: str):
 
 
 def round_2(filename: str):
+    min_x = 1000
+    max_x = 0
+    max_depth = 0
     with open(filename) as f:
-        pass
+        [
+            to_rock_coords(path)
+            for path in [
+                list(map(to_point, line.strip().split(" -> ")))
+                for line in f.readlines()
+            ]
+        ]
+        max_depth = max(max(rocks, key=itemgetter(1))[1], max_depth)
+
+        # add last floor
+        to_rock_coords([(300, max_depth + 2), (700, max_depth + 2)])
+
+        min_x = min(min(rocks, key=itemgetter(0))[0], min_x)
+        max_x = max(max(rocks, key=itemgetter(0))[0], max_x)
+
+        pour_sand(min_x=min_x, max_x=max_x, max_depth=max_depth + 2)
 
 
 def main():
     print_header()
-    round_1(INPUT_FILEPATH)
-    # round_2(INPUT_FILEPATH)
+    # round_1(INPUT_FILEPATH)
+    round_2(INPUT_FILEPATH)
 
 
 if __name__ == "__main__":
