@@ -51,12 +51,13 @@ def to_rock_coords(points: list(tuple(int, int))):
 
 
 def pour_sand(min_x, max_x, max_depth):
-    for i in range(24):
-        print("Sand pouring: " + str(i + 1))
+    i = 0
+    while True:
+        print("Sand pouring: " + str(i))
         fall = [SAND_START]
         fall_attempts = []
 
-        while True:
+        while len(fall) <= max_depth:
             x, y = fall[-1]
             sand = (x, y + 1)
             # print(sand)
@@ -79,9 +80,15 @@ def pour_sand(min_x, max_x, max_depth):
                     # print("in rest")
                     fall.append((x, y + 1))
                     break
+
+        if len(fall) > max_depth:
+            break
+
         sands.add(fall[-1])
-        # print(sands)
         draw(min_x=min_x, max_x=max_x, max_depth=max_depth)
+        i += 1
+
+    print(i)
 
 
 def draw(min_x, max_x, max_depth):
