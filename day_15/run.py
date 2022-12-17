@@ -34,9 +34,9 @@ def print_header():
 
 def draw(x, y):
     print(x, y)
-    for row in range(y[0], y[1]):
+    for row in range(y[0], y[1]+1):
         print(f"{row:4} ", end="")
-        for col in range(x[0], x[1]):
+        for col in range(x[0], x[1]+1):
             symb = "B" if beacon_with_sensors.get((col, row)) else "S" if sensors_with_closest_beacon.get((col, row)) else "."
             print(symb, end="")
         print("")
