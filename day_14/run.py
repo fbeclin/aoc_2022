@@ -9,8 +9,8 @@ import json
 # INPUT_FILEPATH = "./example.txt"
 INPUT_FILEPATH = "./input1.txt"
 
-MAX_HEIGHT = 200
-MAX_SIZE = 600
+MIN_X = 200
+MAX_X = 800
 
 SAND_START = (500, 0)
 
@@ -57,7 +57,6 @@ def fall_sand(fall: list, delta_x: int = 0):
 def pour_sand(min_x, max_x, max_depth):
     i = 1
     while True:
-        print("Sand pouring: " + str(i))
         fall = [SAND_START]
         fall.append(fall_sand(fall))
 
@@ -141,7 +140,7 @@ def round_2(filename: str):
         max_depth = max(max(rocks, key=itemgetter(1))[1], max_depth)
 
         # add last floor
-        to_rock_coords([(300, max_depth + 2), (700, max_depth + 2)])
+        to_rock_coords([(MIN_X, max_depth + 2), (MAX_X, max_depth + 2)])
 
         min_x = min(min(rocks, key=itemgetter(0))[0], min_x)
         max_x = max(max(rocks, key=itemgetter(0))[0], max_x)
